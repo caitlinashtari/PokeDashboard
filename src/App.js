@@ -4,6 +4,7 @@ import './App.css';
 import 'whatwg-fetch';
 import PokeList from './components/PokeList';
 import { Col, Pagination } from 'react-bootstrap/lib/';
+import SelectItemsPerPageButtons from './components/SelectItemsPerPageButtons';
 
 class App extends Component {
 
@@ -15,11 +16,13 @@ class App extends Component {
       activePage: 0,
       limit: 50,
       offset: 0,
-      totalPages: 0
+      totalPages: 0,
+      count: 0
     };
 
     this.loadPokemon = this.loadPokemon.bind(this);
     this.handlePaginationSelect = this.handlePaginationSelect.bind(this);
+    this.handleLimitChange = this.handleLimitChange.bind(this);
 
   }
 
@@ -42,7 +45,7 @@ class App extends Component {
   }
 
   componentWillMount() {
-    this.loadPokemon(`${this.props.baseUrl}/pokemon/`);
+    this.loadPokemon(`${this.props.baseUrl}/pokemon/?limit=${this.state.limit}&offset=${this.state.offset}`);
   }
 
   handlePaginationSelect(selectedPage) {
@@ -51,13 +54,25 @@ class App extends Component {
     this.loadPokemon(`${this.props.baseUrl}/pokemon/?limit=${this.state.limit}&offset=${offset}`);
   }
 
+  handleLimitChange(event) {
+    // everytime we click a button we get the number as text, we convert it to a number and set to state limit
+    this.setState({
+      // + coerses array into number
+      limit: +event.target.innerHTML || this.state.count
+      // recall api, new list of pokemon
+    }, () => {
+      this.loadPokemon(`${this.props.baseUrl}/pokemon/?limit=${this.state.limit}&offset=0`);
+    })
+  }
+
   render() {
     return (
       <div className="App">
         <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
+          <h2>Welcome to Poke Dashboard</h2>
         </div>
+
+        <SelectItemsPerPageButtons options={[10, 50, 100, 200]} selectedValue={this.state.limit} allValue={this.state.count} onOptionSelected={this.handleLimitChange} />
 
         <Col sm={8} md={10} smOffset={2} mdOffset={1} >
           <PokeList listOfPokemon={this.state.pokemon} />
