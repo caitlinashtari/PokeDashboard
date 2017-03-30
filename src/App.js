@@ -61,6 +61,7 @@ class App extends Component {
     this.setState({
       // + coerses array into number
       limit: +event.target.innerHTML || this.state.count
+      activePage: 1
       // recall api, new list of pokemon
     }, () => {
       this.loadPokemon(`${this.props.baseUrl}/pokemon/?limit=${this.state.limit}&offset=0`);
